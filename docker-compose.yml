@@ -4,5 +4,7 @@ services:
     build: ./frontend
     container_name: pi-display-frontend
     ports:
-      - "3000:3000"
+      - "3000:5173"
+    environment:
+      - HOST=0.0.0.0
     restart: unless-stopped
