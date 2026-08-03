@@ -5,8 +5,25 @@ import psutil
 import time
 import docker
 import socket
-import netifaces
 import subprocess
+import distro
+import platform
+
+def format_uptime(seconds):
+
+    seconds = int(seconds)
+    days = seconds // 86400
+    hours = (seconds % 86400) // 3600
+    minutes = (seconds % 3600) // 60
+
+    parts = []
+    if days:
+        parts.append(f"{days} day{'s' if days != 1 else ''}")
+    if hours:
+        parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
+    if minutes:
+        parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
+    return " ".join(parts)
 
 HOST_IP = "192.168.1.50"
 
@@ -46,6 +63,11 @@ def get_stats():
     cpu = psutil.cpu_percent(interval=1)
     memory = psutil.virtual_memory()
     uptime_seconds = time.time() - psutil.boot_time()
+    os_info = {
+	"name": distro.name(),
+	"version": distro.version(),
+	"kernel": platform.release()
+    }
 
     # Root disk
     root_disk = psutil.disk_usage("/")
@@ -74,7 +96,8 @@ def get_stats():
         },
 
         "temperature": temperature,
-        "uptime_seconds": uptime_seconds,
+        "uptime": format_uptime(uptime_seconds),
+	"os": os_info,
 
         "network": {
             "sent": network.bytes_sent,
