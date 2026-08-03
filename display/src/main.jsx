@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {createRoot} from "react-dom/client";
-import Dashboard from "./components/Dashboard";
+import DashboardScreen from "./screens/DashboardScreen";
+import ClockScreen from "./screens/ClockScreen";
+import MediaScreen from "./screens/MediaScreen";
 
 const API = "http://192.168.1.50:8001";
 
@@ -63,19 +65,19 @@ function App(){
 
             {
                 screen==="dashboard" &&
-                <Dashboard />
+                <DashboardScreen />
             }
 
 
             {
                 screen==="clock" &&
-                "🕒 Clock"
+                <ClockScreen />
             }
 
 
             {
                 screen==="media" &&
-                "🎬 Media"
+                <MediaScreen />
             }
 
 

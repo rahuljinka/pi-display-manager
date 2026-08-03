@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import psutil
 import time
+import docker
 
 app = FastAPI()
 
@@ -55,3 +56,15 @@ def get_stats():
         "temperature": temperature,
         "uptime_seconds": uptime
     }
+
+@app.get("/containers")
+def get_containers():
+    client = docker.from_env()
+    containers = client.containers.list()
+    return [
+        {
+            "name": container.name,
+            "status": container.status
+        }
+        for container in containers
+    ]
