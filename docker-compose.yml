@@ -15,3 +15,10 @@ services:
     ports:
       - "8001:8000"
     restart: unless-stopped
+
+  display:
+    build: ./display
+    container_name: pi-display-client
+    ports:
+      - "5174:5174"
+    restart: unless-stopped
