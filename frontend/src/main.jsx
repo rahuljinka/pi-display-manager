@@ -6,6 +6,7 @@ import Clock from "./components/Clock";
 import Media from "./components/Media";
 import SystemStats from "./components/SystemStats";
 import DockerStats from "./components/DockerStats";
+import MediaManager from "./components/MediaManager";
 
 const API_URL = "http://192.168.1.50:8001";
 
@@ -116,6 +117,7 @@ function App(){
 
             <SystemStats/>
 	    <DockerStats/>
+	    <MediaManager/>
 
 
             <hr/>

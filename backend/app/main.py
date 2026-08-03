@@ -8,6 +8,11 @@ import socket
 import subprocess
 import distro
 import platform
+import os
+import shutil
+from fastapi import UploadFile, File
+from fastapi.responses import FileResponse
+
 
 def format_uptime(seconds):
 
@@ -28,6 +33,9 @@ def format_uptime(seconds):
 HOST_IP = "192.168.1.50"
 
 app = FastAPI()
+MEDIA_DIR = "/app/media"
+
+os.makedirs(MEDIA_DIR, exist_ok=True)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +46,10 @@ app.add_middleware(
 
 current_screen = {
     "screen": "dashboard"
+}
+
+current_media = {
+    "file": None
 }
 
 class ScreenUpdate(BaseModel):
@@ -116,3 +128,96 @@ def get_containers():
         }
         for container in containers
     ]
+
+@app.post("/media/upload")
+def upload_media(file: UploadFile = File(...)):
+
+    file_path = os.path.join(
+        MEDIA_DIR,
+        file.filename
+    )
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(
+            file.file,
+            buffer
+        )
+
+    return {
+        "message": "Uploaded successfully",
+        "filename": file.filename
+    }
+
+
+
+@app.get("/media")
+def list_media():
+
+    media = []
+
+    for filename in os.listdir(MEDIA_DIR):
+
+        path = os.path.join(
+            MEDIA_DIR,
+            filename
+        )
+
+        if os.path.isfile(path):
+
+            stat = os.stat(path)
+
+            media.append({
+                "filename": filename,
+                "type": os.path.splitext(filename)[1].replace(".", "").upper(),
+                "size": round(stat.st_size / (1024 * 1024), 2),
+                "uploaded": time.strftime(
+                    "%Y-%m-%d %H:%M:%S",
+                    time.localtime(stat.st_mtime)
+                )
+            })
+
+
+    return {
+        "files": media
+    }
+
+@app.get("/media/current")
+def get_current_media():
+    return current_media
+
+
+class MediaUpdate(BaseModel):
+    file: str
+
+@app.post("/media/current")
+def set_current_media(data: MediaUpdate):
+    current_media["file"] = data.file
+    return current_media
+
+@app.get("/media/{filename}")
+def get_media(filename: str):
+
+    file_path = os.path.join(
+        MEDIA_DIR,
+        filename
+    )
+
+    return FileResponse(file_path)
+
+
+
+@app.delete("/media/{filename}")
+def delete_media(filename: str):
+
+    file_path = os.path.join(
+        MEDIA_DIR,
+        filename
+    )
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    return {
+        "message": "Deleted",
+        "filename": filename
+    }

@@ -18,6 +18,7 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - /:/host:ro
+    - ./media/uploads:/app/media
     restart: unless-stopped
 
   display:
