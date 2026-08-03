@@ -1,0 +1,8 @@
+services:
+
+  frontend:
+    build: ./frontend
+    container_name: pi-display-frontend
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
