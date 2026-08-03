@@ -4,6 +4,11 @@ from pydantic import BaseModel
 import psutil
 import time
 import docker
+import socket
+import netifaces
+import subprocess
+
+HOST_IP = "192.168.1.50"
 
 app = FastAPI()
 
@@ -40,21 +45,41 @@ def update_screen(data: ScreenUpdate):
 def get_stats():
     cpu = psutil.cpu_percent(interval=1)
     memory = psutil.virtual_memory()
-    disk = psutil.disk_usage("/")
-    uptime = time.time() - psutil.boot_time()
+    uptime_seconds = time.time() - psutil.boot_time()
+
+    # Root disk
+    root_disk = psutil.disk_usage("/")
+
+    # Network
+    network = psutil.net_io_counters()
+
+    # Temperature
     try:
         with open("/sys/class/thermal/thermal_zone0/temp") as f:
             temperature = int(f.read()) / 1000
     except:
         temperature = None
     return {
+        "hostname": socket.gethostname(),
+        "ip": HOST_IP,
         "cpu": cpu,
         "ram_used": memory.used,
         "ram_total": memory.total,
         "ram_percent": memory.percent,
-        "disk_percent": disk.percent,
+
+        "storage": {
+            "used": root_disk.used,
+            "total": root_disk.total,
+            "percent": root_disk.percent
+        },
+
         "temperature": temperature,
-        "uptime_seconds": uptime
+        "uptime_seconds": uptime_seconds,
+
+        "network": {
+            "sent": network.bytes_sent,
+            "received": network.bytes_recv
+        }
     }
 
 @app.get("/containers")
