@@ -41,21 +41,26 @@ export default function Dashboard() {
 
 
     async function loadStats() {
-
+        console.log("Fetching stats from:", `${API}/stats`);
         try {
 
             const response = await fetch(
                 `${API}/stats`
             );
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log("Received stats:", data);
 
             setStats(data);
 
         }
         catch (error) {
 
-            console.log(error);
+            console.error("Failed to load stats:", error);
 
         }
 

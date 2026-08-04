@@ -15,15 +15,19 @@ function App(){
 
 
     async function loadScreen(){
-
+        console.log("Fetching screen from:", `${API}/screen`);
         try{
 
             const response = await fetch(
                 `${API}/screen`
             );
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             const data = await response.json();
+            console.log("Received screen:", data.screen);
 
 
             setScreen(data.screen);
@@ -32,7 +36,7 @@ function App(){
         }
         catch(error){
 
-            console.log(
+            console.error(
                 "Screen error:",
                 error
             );

@@ -10,21 +10,26 @@ export default function DockerStatus(){
 
 
     async function loadContainers(){
-
+        console.log("Fetching containers from:", `${API}/containers`);
         try{
 
             const response = await fetch(
                 `${API}/containers`
             );
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log("Received containers:", data);
 
             setContainers(data);
 
         }
         catch(error){
 
-            console.log(error);
+            console.error("Failed to load containers:", error);
 
         }
 
