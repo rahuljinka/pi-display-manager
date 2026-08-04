@@ -12,7 +12,7 @@ import os
 import shutil
 from fastapi import UploadFile, File
 from fastapi.responses import FileResponse
-
+import requests
 
 def format_uptime(seconds):
 
@@ -220,4 +220,66 @@ def delete_media(filename: str):
     return {
         "message": "Deleted",
         "filename": filename
+    }
+
+@app.get("/weather")
+
+def get_weather():
+
+    latitude = 40.5743
+
+    longitude = -74.5361
+
+    url = (
+
+        "https://api.open-meteo.com/v1/forecast?"
+
+        f"latitude={latitude}"
+
+        f"&longitude={longitude}"
+
+        "&daily=temperature_2m_max,"
+
+        "temperature_2m_min,"
+
+        "weathercode"
+
+        "&temperature_unit=fahrenheit"
+
+        "&timezone=America/New_York"
+
+    )
+
+    response = requests.get(url)
+
+    data = response.json()
+
+    forecast = []
+
+    for i in range(7):
+
+        forecast.append({
+
+            "date": data["daily"]["time"][i],
+
+            "high":
+
+            data["daily"]["temperature_2m_max"][i],
+
+            "low":
+
+            data["daily"]["temperature_2m_min"][i],
+
+            "code":
+
+            data["daily"]["weathercode"][i]
+
+        })
+
+    return {
+
+        "location":"Somerset, NJ",
+
+        "forecast":forecast
+
     }

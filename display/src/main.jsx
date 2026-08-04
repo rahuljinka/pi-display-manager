@@ -1,15 +1,17 @@
-import React, {useEffect, useState} from "react";
-import {createRoot} from "react-dom/client";
+import React, { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+
 import DashboardScreen from "./screens/DashboardScreen";
-import ClockScreen from "./screens/ClockScreen";
+import InfoScreen from "./screens/InfoScreen";
 import MediaScreen from "./screens/MediaScreen";
+
 
 const API = "http://192.168.1.50:8001";
 
 
 function App(){
 
-    const [screen,setScreen] = useState("loading");
+    const [screen, setScreen] = useState("loading");
 
 
     async function loadScreen(){
@@ -20,14 +22,22 @@ function App(){
                 `${API}/screen`
             );
 
+
             const data = await response.json();
 
+
             setScreen(data.screen);
+
 
         }
         catch(error){
 
-            console.log(error);
+            console.log(
+                "Screen error:",
+                error
+            );
+
+
             setScreen("error");
 
         }
@@ -35,11 +45,13 @@ function App(){
     }
 
 
+
     useEffect(()=>{
 
         loadScreen();
 
-        const timer=setInterval(
+
+        const timer = setInterval(
             loadScreen,
             3000
         );
@@ -47,50 +59,111 @@ function App(){
 
         return ()=>clearInterval(timer);
 
+
     },[]);
+
+
+
+
+    function renderScreen(){
+
+
+        switch(screen){
+
+
+            case "dashboard":
+
+                return <DashboardScreen />;
+
+
+
+            case "info":
+
+                return <InfoScreen />;
+
+
+
+            case "media":
+
+                return <MediaScreen />;
+
+
+
+            case "loading":
+
+                return (
+
+                    <div style={{
+                        color:"white",
+                        fontSize:"40px"
+                    }}>
+
+                        Loading...
+
+                    </div>
+
+                );
+
+
+
+            case "error":
+
+                return (
+
+                    <div style={{
+                        color:"white",
+                        fontSize:"40px"
+                    }}>
+
+                        Backend Error
+
+                    </div>
+
+                );
+
+
+
+            default:
+
+                return (
+
+                    <div style={{
+                        color:"white",
+                        fontSize:"40px"
+                    }}>
+
+                        Unknown Screen: {screen}
+
+                    </div>
+
+                );
+
+        }
+
+    }
+
 
 
 
     return (
 
-        <div style={{
-            background:"#111",
-            color:"white",
-            height:"100vh",
-            display:"flex",
-            justifyContent:"center",
-            alignItems:"center",
-            fontSize:"50px"
-        }}>
+        <div
 
-            {
-                screen==="dashboard" &&
-                <DashboardScreen />
-            }
+            style={{
 
+                width:"100vw",
 
-            {
-                screen==="clock" &&
-                <ClockScreen />
-            }
+                height:"100vh",
 
+                overflow:"hidden",
 
-            {
-                screen==="media" &&
-                <MediaScreen />
-            }
+                background:"#111"
 
+            }}
 
-            {
-                screen==="loading" &&
-                "Loading..."
-            }
+        >
 
-
-            {
-                screen==="error" &&
-                "Backend Error"
-            }
+            {renderScreen()}
 
 
         </div>
@@ -100,6 +173,10 @@ function App(){
 }
 
 
+
+
 createRoot(
     document.getElementById("root")
-).render(<App />);
+).render(
+    <App />
+);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import Dashboard from "./components/Dashboard";
-import Clock from "./components/Clock";
+import Info from "./components/Info";
 import Media from "./components/Media";
 import SystemStats from "./components/SystemStats";
 import DockerStats from "./components/DockerStats";
@@ -89,9 +89,9 @@ function App(){
                     padding:"15px",
                     fontSize:"16px"
                 }}
-                onClick={()=>changeScreen("clock")}
+                onClick={()=>changeScreen("info")}
                 >
-                    🕒 Clock
+                    ℹ️  Info
                 </button>
 
 
@@ -138,8 +138,8 @@ function App(){
 
 
             {
-                screen==="clock" &&
-                <Clock/>
+                screen==="info" &&
+                <Info/>
             }
 
 

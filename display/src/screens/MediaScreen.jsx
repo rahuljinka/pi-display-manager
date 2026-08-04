@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
+import DisplayLayout from "../components/DisplayLayout";
 
 const API = "http://192.168.1.50:8001";
 
+export default function MediaScreen() {
 
-export default function MediaScreen(){
+    const [media, setMedia] = useState(null);
 
-    const [media,setMedia] = useState(null);
+    async function loadMedia() {
 
-
-    async function loadMedia(){
-
-        try{
+        try {
 
             const response = await fetch(
                 `${API}/media/current`
@@ -21,7 +20,7 @@ export default function MediaScreen(){
             setMedia(data.file);
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(
                 "Media error:",
@@ -33,91 +32,76 @@ export default function MediaScreen(){
     }
 
 
-    useEffect(()=>{
+    useEffect(() => {
 
         loadMedia();
-
 
         const timer = setInterval(
             loadMedia,
             1000
         );
 
+        return () => clearInterval(timer);
 
-        return ()=>clearInterval(timer);
-
-
-    },[]);
-
-
-
-    if(!media){
-
-        return (
-
-            <div style={{
-                color:"white",
-                fontSize:"40px"
-            }}>
-                No Media Selected
-            </div>
-
-        );
-
-    }
-
-
-
-    const url =
-        `${API}/media/${media}`;
-
-
-
-    if(
-        media.endsWith(".mp4") ||
-        media.endsWith(".webm")
-    ){
-
-        return (
-
-            <video
-
-                src={url}
-
-                autoPlay
-                muted
-                loop
-                playsInline
-
-                style={{
-                    width:"100vw",
-                    height:"100vh",
-                    objectFit:"contain",
-                    background:"black"
-                }}
-
-            />
-
-        );
-
-    }
-
+    }, []);
 
 
     return (
 
-        <img
+        <DisplayLayout fullScreen>
 
-            src={url}
+            {
+                !media ?
 
-            style={{
-                width:"100vw",
-                height:"100vh",
-                objectFit:"contain",
-                background:"black"
-            }}
+                    <div
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            color: "white",
+                            fontSize: "2rem"
+                        }}
+                    >
+                        No Media Selected
+                    </div>
 
-        />
+                    :
+
+                    media.endsWith(".mp4") ||
+                    media.endsWith(".webm") ?
+
+                        <video
+                            src={`${API}/media/${media}`}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "contain",
+                                background: "black"
+                            }}
+                        />
+
+                        :
+
+                        <img
+                            src={`${API}/media/${media}`}
+                            alt=""
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "contain",
+                                background: "black"
+                            }}
+                        />
+
+            }
+
+        </DisplayLayout>
 
     );
 
