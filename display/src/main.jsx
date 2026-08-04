@@ -6,7 +6,7 @@ import InfoScreen from "./screens/InfoScreen";
 import MediaScreen from "./screens/MediaScreen";
 
 
-const API = "http://192.168.1.50:8001";
+const API = `http://${window.location.hostname}:8001`;
 
 
 function App(){
