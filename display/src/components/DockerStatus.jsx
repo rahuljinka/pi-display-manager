@@ -41,11 +41,16 @@ export default function DockerStatus() {
                             borderBottom: idx === containers.length - 1 ? "none" : "1px solid var(--color-border)"
                         }}
                     >
-                        <span style={{ fontWeight: "500", fontSize: "16px" }}>
-                            {container.name}
-                        </span>
-                        <StatusBadge status="healthy">
-                            Running
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                            <span style={{ fontWeight: "500", fontSize: "16px" }}>
+                                {container.name}
+                            </span>
+                            <span style={{ fontSize: "12px", color: "var(--color-textSecondary)" }}>
+                                {container.image || "Unknown Image"}
+                            </span>
+                        </div>
+                        <StatusBadge status={container.status.toLowerCase() === "running" || container.status.toLowerCase().includes("up") ? "healthy" : "error"}>
+                            {container.status}
                         </StatusBadge>
                     </div>
                 ))}

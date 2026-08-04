@@ -120,14 +120,22 @@ def get_stats():
 @app.get("/containers")
 def get_containers():
     client = docker.from_env()
-    containers = client.containers.list()
-    return [
-        {
+    containers = client.containers.list(all=True)
+    result = []
+    for container in containers:
+        # Get image name
+        image_name = "unknown"
+        if container.image.tags:
+            image_name = container.image.tags[0]
+        elif 'Config' in container.attrs and 'Image' in container.attrs['Config']:
+            image_name = container.attrs['Config']['Image']
+        
+        result.append({
             "name": container.name,
+            "image": image_name,
             "status": container.status
-        }
-        for container in containers
-    ]
+        })
+    return result
 
 @app.post("/media/upload")
 def upload_media(file: UploadFile = File(...)):

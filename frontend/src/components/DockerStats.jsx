@@ -46,7 +46,7 @@ export default function DockerStats() {
                                 <span style={{ fontWeight: "600" }}>{container.name}</span>
                                 <span style={{ fontSize: "12px", color: "var(--color-textSecondary)" }}>{container.image || "Unknown Image"}</span>
                             </div>
-                            <StatusBadge status={container.status.toLowerCase().includes("up") ? "healthy" : "error"}>
+                            <StatusBadge status={container.status.toLowerCase() === "running" || container.status.toLowerCase().includes("up") ? "healthy" : "error"}>
                                 {container.status}
                             </StatusBadge>
                         </div>
