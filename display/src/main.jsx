@@ -6,7 +6,7 @@ import InfoScreen from "./screens/InfoScreen";
 import MediaScreen from "./screens/MediaScreen";
 
 
-const API = "http://192.168.1.50:8001";
+const API = `http://${window.location.hostname}:8001`;
 
 
 function App(){
@@ -15,15 +15,19 @@ function App(){
 
 
     async function loadScreen(){
-
+        console.log("Fetching screen from:", `${API}/screen`);
         try{
 
             const response = await fetch(
                 `${API}/screen`
             );
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
             const data = await response.json();
+            console.log("Received screen:", data.screen);
 
 
             setScreen(data.screen);
@@ -32,7 +36,7 @@ function App(){
         }
         catch(error){
 
-            console.log(
+            console.error(
                 "Screen error:",
                 error
             );

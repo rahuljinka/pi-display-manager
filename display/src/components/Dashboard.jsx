@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DockerStatus from "./DockerStatus";
 
-const API = "http://192.168.1.50:8001";
+const API = `http://${window.location.hostname}:8001`;
 
 
 function Bar({ value }) {
@@ -41,21 +41,26 @@ export default function Dashboard() {
 
 
     async function loadStats() {
-
+        console.log("Fetching stats from:", `${API}/stats`);
         try {
 
             const response = await fetch(
                 `${API}/stats`
             );
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log("Received stats:", data);
 
             setStats(data);
 
         }
         catch (error) {
 
-            console.log(error);
+            console.error("Failed to load stats:", error);
 
         }
 
@@ -140,11 +145,11 @@ export default function Dashboard() {
             <div>
 
                 <h3>
-                    CPU {stats.cpu}%
+                    CPU {stats.cpu ?? 0}%
                 </h3>
 
                 <Bar
-                    value={stats.cpu}
+                    value={stats.cpu ?? 0}
                 />
 
             </div>
@@ -156,11 +161,11 @@ export default function Dashboard() {
             <div>
 
                 <h3>
-                    RAM {stats.ram_percent}%
+                    RAM {stats.ram_percent ?? 0}%
                 </h3>
 
                 <Bar
-                    value={stats.ram_percent}
+                    value={stats.ram_percent ?? 0}
                 />
 
             </div>
@@ -172,11 +177,11 @@ export default function Dashboard() {
             <div>
 
                 <h3>
-                    Storage {stats.disk_percent}%
+                    Storage {stats.storage?.percent || 0}%
                 </h3>
 
                 <Bar
-                    value={stats.disk_percent}
+                    value={stats.storage?.percent || 0}
                 />
 
             </div>
@@ -191,7 +196,7 @@ export default function Dashboard() {
                 }}
             >
 
-                🌡️ Temperature {stats.temperature}°C
+                🌡️ Temperature {stats.temperature ?? "--"}°C
 
             </div>
 
