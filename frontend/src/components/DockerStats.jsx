@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API_URL = "http://192.168.1.50:8001";
+const API_URL = `http://${window.location.hostname}:8001`;
 
 
 export default function DockerStats(){

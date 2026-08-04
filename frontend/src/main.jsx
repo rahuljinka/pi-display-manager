@@ -8,7 +8,7 @@ import SystemStats from "./components/SystemStats";
 import DockerStats from "./components/DockerStats";
 import MediaManager from "./components/MediaManager";
 
-const API_URL = "http://192.168.1.50:8001";
+const API_URL = `http://${window.location.hostname}:8001`;
 
 
 function App(){

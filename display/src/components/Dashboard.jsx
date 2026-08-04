@@ -140,11 +140,11 @@ export default function Dashboard() {
             <div>
 
                 <h3>
-                    CPU {stats.cpu}%
+                    CPU {stats.cpu ?? 0}%
                 </h3>
 
                 <Bar
-                    value={stats.cpu}
+                    value={stats.cpu ?? 0}
                 />
 
             </div>
@@ -156,11 +156,11 @@ export default function Dashboard() {
             <div>
 
                 <h3>
-                    RAM {stats.ram_percent}%
+                    RAM {stats.ram_percent ?? 0}%
                 </h3>
 
                 <Bar
-                    value={stats.ram_percent}
+                    value={stats.ram_percent ?? 0}
                 />
 
             </div>
@@ -191,7 +191,7 @@ export default function Dashboard() {
                 }}
             >
 
-                🌡️ Temperature {stats.temperature}°C
+                🌡️ Temperature {stats.temperature ?? "--"}°C
 
             </div>
 
