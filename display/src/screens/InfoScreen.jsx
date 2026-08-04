@@ -52,14 +52,14 @@ export default function InfoScreen() {
                     </p>
                 </Card>
 
-                {weather && (
+                {weather && weather.current && (
                     <Card style={{ display: "flex", alignItems: "center", justifyContent: "space-around", padding: "var(--spacing-lg)" }}>
                         <div style={{ fontSize: "64px" }}>
-                            {weatherIcon(weather.current.weather_code)}
+                            {weatherIcon(weather.current.weathercode)}
                         </div>
                         <div style={{ textAlign: "center" }}>
                             <div style={{ fontSize: "48px", fontWeight: "bold" }}>
-                                {Math.round(weather.current.temperature_2m)}°C
+                                {Math.round(weather.current.temperature)}°F
                             </div>
                             <div style={{ color: "var(--color-textSecondary)" }}>
                                 Outside Temp
@@ -71,7 +71,7 @@ export default function InfoScreen() {
                 <Card style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <span style={{ color: "var(--color-textSecondary)" }}>Location</span>
-                        <span>London, UK</span>
+                        <span>Somerset, NJ</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <span style={{ color: "var(--color-textSecondary)" }}>Network</span>

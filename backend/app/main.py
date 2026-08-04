@@ -223,63 +223,37 @@ def delete_media(filename: str):
     }
 
 @app.get("/weather")
-
 def get_weather():
-
     latitude = 40.5743
-
     longitude = -74.5361
-
+    
     url = (
-
         "https://api.open-meteo.com/v1/forecast?"
-
-        f"latitude={latitude}"
-
-        f"&longitude={longitude}"
-
-        "&daily=temperature_2m_max,"
-
-        "temperature_2m_min,"
-
-        "weathercode"
-
+        f"latitude={latitude}&longitude={longitude}"
+        "&current_weather=true"
+        "&daily=temperature_2m_max,temperature_2m_min,weathercode"
         "&temperature_unit=fahrenheit"
-
         "&timezone=America/New_York"
-
     )
-
-    response = requests.get(url)
-
-    data = response.json()
-
-    forecast = []
-
-    for i in range(7):
-
-        forecast.append({
-
-            "date": data["daily"]["time"][i],
-
-            "high":
-
-            data["daily"]["temperature_2m_max"][i],
-
-            "low":
-
-            data["daily"]["temperature_2m_min"][i],
-
-            "code":
-
-            data["daily"]["weathercode"][i]
-
-        })
-
-    return {
-
-        "location":"Somerset, NJ",
-
-        "forecast":forecast
-
-    }
+    
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        
+        forecast = []
+        for i in range(len(data["daily"]["time"])):
+            forecast.append({
+                "date": data["daily"]["time"][i],
+                "high": data["daily"]["temperature_2m_max"][i],
+                "low": data["daily"]["temperature_2m_min"][i],
+                "code": data["daily"]["weathercode"][i]
+            })
+            
+        return {
+            "location": "Somerset, NJ",
+            "current": data["current_weather"],
+            "forecast": forecast
+        }
+    except Exception as e:
+        return {"error": str(e)}
