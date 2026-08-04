@@ -7,194 +7,94 @@ import Media from "./components/Media";
 import SystemStats from "./components/SystemStats";
 import DockerStats from "./components/DockerStats";
 import MediaManager from "./components/MediaManager";
+import ThemeSettings from "./components/ThemeSettings";
+import { ThemeProvider } from "./theme/ThemeContext";
+import { GlobalStyles } from "./theme/GlobalStyles";
+import { Card, Button, SectionHeader } from "./components/ui";
 
 const API_URL = `http://${window.location.hostname}:8001`;
 
+function App() {
+    const [screen, setScreen] = useState("dashboard");
 
-function App(){
-
-    const [screen,setScreen] = useState("dashboard");
-
-
-    async function changeScreen(newScreen){
-
+    async function changeScreen(newScreen) {
         setScreen(newScreen);
-
         try {
-
             await fetch(`${API_URL}/screen`, {
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body: JSON.stringify({
-                    screen:newScreen
-                })
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ screen: newScreen })
             });
-
-        } catch(error){
-
-            console.error(
-                "Backend connection failed:",
-                error
-            );
-
+        } catch (error) {
+            console.error("Backend connection failed:", error);
         }
-
     }
 
-
     return (
+        <ThemeProvider>
+            <GlobalStyles />
+            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "var(--spacing-lg)" }}>
+                <SectionHeader 
+                    title="Pi Display Manager" 
+                    action={
+                        <div style={{ display: "flex", gap: "var(--spacing-sm)" }}>
+                            <Button 
+                                variant={screen === "dashboard" ? "primary" : "ghost"} 
+                                onClick={() => changeScreen("dashboard")}
+                                size="sm"
+                            >
+                                Dashboard
+                            </Button>
+                            <Button 
+                                variant={screen === "info" ? "primary" : "ghost"} 
+                                onClick={() => changeScreen("info")}
+                                size="sm"
+                            >
+                                Info
+                            </Button>
+                            <Button 
+                                variant={screen === "media" ? "primary" : "ghost"} 
+                                onClick={() => changeScreen("media")}
+                                size="sm"
+                            >
+                                Media
+                            </Button>
+                            <Button 
+                                variant={screen === "settings" ? "primary" : "ghost"} 
+                                onClick={() => setScreen("settings")}
+                                size="sm"
+                            >
+                                ⚙️
+                            </Button>
+                        </div>
+                    }
+                />
 
-        <div
-        style={{
-            background:"#111",
-            color:"white",
-            minHeight:"100vh",
-            padding:"20px",
-            fontFamily:"Arial"
-        }}
-        >
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "var(--spacing-lg)", marginBottom: "var(--spacing-xl)" }}>
+                    <SystemStats />
+                    <DockerStats />
+                </div>
 
+                <MediaManager />
 
-            <h1>
-                Pi Display Manager
-            </h1>
+                <SectionHeader title="Display Preview" />
+                <Card style={{ minHeight: "200px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {screen === "dashboard" && <Dashboard />}
+                    {screen === "info" && <Info />}
+                    {screen === "media" && <Media />}
+                    {screen === "settings" && <ThemeSettings />}
+                </Card>
 
-
-            <h3>
-                Current Screen: {screen.toUpperCase()}
-            </h3>
-
-
-
-            <div>
-
-                <button
-                style={{
-                    margin:"5px",
-                    padding:"15px",
-                    fontSize:"16px"
-                }}
-                onClick={()=>changeScreen("dashboard")}
-                >
-                    🖥 Dashboard
-                </button>
-
-
-
-                <button
-                style={{
-                    margin:"5px",
-                    padding:"15px",
-                    fontSize:"16px"
-                }}
-                onClick={()=>changeScreen("info")}
-                >
-                    ℹ️  Info
-                </button>
-
-
-
-                <button
-                style={{
-                    margin:"5px",
-                    padding:"15px",
-                    fontSize:"16px"
-                }}
-                onClick={()=>changeScreen("media")}
-                >
-                    🎬 Media
-                </button>
-
+                <SectionHeader title="Quick Controls" />
+                <Card style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "var(--spacing-md)" }}>
+                    <Button variant="ghost">Reboot Pi</Button>
+                    <Button variant="ghost">Shutdown</Button>
+                    <Button variant="ghost">Restart Backend</Button>
+                    <Button variant="ghost">Refresh Display</Button>
+                </Card>
             </div>
-
-
-
-            <hr/>
-
-
-
-            <SystemStats/>
-	    <DockerStats/>
-	    <MediaManager/>
-
-
-            <hr/>
-
-
-
-            <h2>
-                Display Preview
-            </h2>
-
-
-
-            {
-                screen==="dashboard" &&
-                <Dashboard/>
-            }
-
-
-
-            {
-                screen==="info" &&
-                <Info/>
-            }
-
-
-
-            {
-                screen==="media" &&
-                <Media/>
-            }
-
-
-
-            <hr/>
-
-
-
-            <h2>
-                Settings
-            </h2>
-
-
-            <div
-            style={{
-                background:"#222",
-                padding:"20px",
-                borderRadius:"10px"
-            }}
-            >
-
-                <p>
-                    Display Orientation: Portrait (coming soon)
-                </p>
-
-                <p>
-                    Brightness Control: Coming Soon
-                </p>
-
-                <p>
-                    Fan Control: Hardware Pending
-                </p>
-
-                <p>
-                    RGB Control: Hardware Pending
-                </p>
-
-            </div>
-
-
-        </div>
-
+        </ThemeProvider>
     );
-
 }
 
-
-
-createRoot(
-    document.getElementById("root")
-).render(<App />);
+createRoot(document.getElementById("root")).render(<App />);
