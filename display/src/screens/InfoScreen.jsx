@@ -38,42 +38,82 @@ export default function InfoScreen() {
         };
     }, []);
 
+    const formatDay = (dateStr) => {
+        const date = new Date(dateStr + "T00:00:00");
+        return date.toLocaleDateString(undefined, { weekday: 'short' });
+    };
+
     return (
         <DisplayLayout>
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-lg)" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
                 <SectionHeader title="System Info" />
                 
-                <Card style={{ textAlign: "center", padding: "var(--spacing-xl)" }}>
-                    <h1 style={{ fontSize: "64px", margin: "0" }}>
+                <Card style={{ textAlign: "center", padding: "var(--spacing-lg)" }}>
+                    <h1 style={{ fontSize: "56px", margin: "0", lineHeight: "1" }}>
                         {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </h1>
-                    <p style={{ color: "var(--color-textSecondary)", fontSize: "20px", marginTop: "var(--spacing-sm)" }}>
+                    <p style={{ color: "var(--color-textSecondary)", fontSize: "18px", marginTop: "var(--spacing-xs)" }}>
                         {time.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
                     </p>
                 </Card>
 
                 {weather && weather.current && (
-                    <Card style={{ display: "flex", alignItems: "center", justifyContent: "space-around", padding: "var(--spacing-lg)" }}>
-                        <div style={{ fontSize: "64px" }}>
+                    <Card style={{ display: "flex", alignItems: "center", justifyContent: "space-around", padding: "var(--spacing-md)" }}>
+                        <div style={{ fontSize: "48px" }}>
                             {weatherIcon(weather.current.weathercode)}
                         </div>
                         <div style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: "48px", fontWeight: "bold" }}>
+                            <div style={{ fontSize: "42px", fontWeight: "bold", lineHeight: "1" }}>
                                 {Math.round(weather.current.temperature)}°F
                             </div>
-                            <div style={{ color: "var(--color-textSecondary)" }}>
-                                Outside Temp
+                            <div style={{ color: "var(--color-textSecondary)", fontSize: "14px" }}>
+                                Current Temp
                             </div>
                         </div>
                     </Card>
                 )}
+
+                {weather && weather.forecast && (
+                    <div>
+                        <SectionHeader title="7-Day Forecast" />
+                        <Card padding="sm">
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {weather.forecast.map((day, idx) => (
+                                    <div 
+                                        key={day.date} 
+                                        style={{ 
+                                            display: "flex", 
+                                            alignItems: "center", 
+                                            justifyContent: "space-between",
+                                            padding: "var(--spacing-sm) 0",
+                                            borderBottom: idx === weather.forecast.length - 1 ? "none" : "1px solid var(--color-border)"
+                                        }}
+                                    >
+                                        <span style={{ width: "45px", fontWeight: "600" }}>{formatDay(day.date)}</span>
+                                        <span style={{ fontSize: "24px", width: "35px", textAlign: "center" }}>{weatherIcon(day.code)}</span>
+                                        <div style={{ width: "60px", textAlign: "center" }}>
+                                            <span style={{ fontSize: "12px", color: "var(--color-info)", display: "block" }}>
+                                                {day.rain_chance}%
+                                            </span>
+                                            <span style={{ fontSize: "10px", color: "var(--color-textSecondary)", textTransform: "uppercase" }}>Rain</span>
+                                        </div>
+                                        <div style={{ width: "80px", textAlign: "right" }}>
+                                            <span style={{ fontWeight: "600" }}>{Math.round(day.high)}°</span>
+                                            <span style={{ color: "var(--color-textSecondary)", marginLeft: "var(--spacing-xs)", fontSize: "14px" }}>{Math.round(day.low)}°</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                    </div>
+                )}
                 
-                <Card style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <Card style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-xs)", padding: "var(--spacing-sm)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
                         <span style={{ color: "var(--color-textSecondary)" }}>Location</span>
                         <span>Somerset, NJ</span>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
                         <span style={{ color: "var(--color-textSecondary)" }}>Network</span>
                         <span>Connected (eth0)</span>
                     </div>

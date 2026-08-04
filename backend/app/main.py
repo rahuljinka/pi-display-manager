@@ -231,7 +231,7 @@ def get_weather():
         "https://api.open-meteo.com/v1/forecast?"
         f"latitude={latitude}&longitude={longitude}"
         "&current_weather=true"
-        "&daily=temperature_2m_max,temperature_2m_min,weathercode"
+        "&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max"
         "&temperature_unit=fahrenheit"
         "&timezone=America/New_York"
     )
@@ -247,7 +247,8 @@ def get_weather():
                 "date": data["daily"]["time"][i],
                 "high": data["daily"]["temperature_2m_max"][i],
                 "low": data["daily"]["temperature_2m_min"][i],
-                "code": data["daily"]["weathercode"][i]
+                "code": data["daily"]["weathercode"][i],
+                "rain_chance": data["daily"]["precipitation_probability_max"][i]
             })
             
         return {
