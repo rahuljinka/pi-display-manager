@@ -15,10 +15,14 @@ services:
     hostname: pi5NAS
     ports:
       - "8001:8000"
+    privileged: true
+    devices:
+      - /dev/spidev0.0:/dev/spidev0.0
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    - /:/host:ro
-    - ./media/uploads:/app/media
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host:ro
+      - /sys:/sys
+      - ./media/uploads:/app/media
     restart: unless-stopped
 
   display:

@@ -1,214 +1,89 @@
 import React, { useEffect, useState } from "react";
 import DockerStatus from "./DockerStatus";
+import { Card, ProgressBar, SectionHeader } from "./ui";
 
 const API = `http://${window.location.hostname}:8001`;
 
-
-function Bar({ value }) {
-
-    return (
-
-        <div
-            style={{
-                width: "100%",
-                height: "2vh",
-                background: "#333",
-                borderRadius: "10px",
-                overflow: "hidden"
-            }}
-        >
-
-            <div
-                style={{
-                    width: `${value}%`,
-                    height: "100%",
-                    background: "#00ff88"
-                }}
-            />
-
-        </div>
-
-    );
-
-}
-
-
-
 export default function Dashboard() {
-
     const [stats, setStats] = useState(null);
 
-
-
     async function loadStats() {
-        console.log("Fetching stats from:", `${API}/stats`);
         try {
-
-            const response = await fetch(
-                `${API}/stats`
-            );
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
+            const response = await fetch(`${API}/stats`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            console.log("Received stats:", data);
-
             setStats(data);
-
         }
         catch (error) {
-
             console.error("Failed to load stats:", error);
-
         }
-
     }
-
-
 
     useEffect(() => {
-
         loadStats();
-
-
-        const timer = setInterval(
-            loadStats,
-            3000
-        );
-
-
+        const timer = setInterval(loadStats, 3000);
         return () => clearInterval(timer);
-
-
     }, []);
 
-
-
-
     if (!stats) {
-
         return (
-
-            <div
-                style={{
-                    color: "white",
-                    fontSize: "3vw"
-                }}
-            >
-                Loading...
+            <div style={{ color: "var(--color-textSecondary)", fontSize: "18px" }}>
+                Loading stats...
             </div>
-
         );
-
     }
 
-
-
+    const getTempColor = (temp) => {
+        if (temp > 70) return "var(--color-error)";
+        if (temp > 50) return "var(--color-warning)";
+        return "var(--color-success)";
+    };
 
     return (
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-md)" }}>
+            <SectionHeader 
+                title={stats.hostname || "Raspberry Pi"} 
+                action={<span style={{ color: "var(--color-textSecondary)", fontSize: "12px" }}>UP: {stats.uptime}</span>}
+            />
 
-        <div
-            style={{
-                width: "100%",
-                height: "100%",
+            <Card>
+                <div style={{ marginBottom: "var(--spacing-md)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                        <span style={{ fontWeight: "600" }}>CPU</span>
+                        <span>{stats.cpu ?? 0}%</span>
+                    </div>
+                    <ProgressBar value={stats.cpu ?? 0} />
+                </div>
 
-                display: "flex",
-                flexDirection: "column",
+                <div style={{ marginBottom: "var(--spacing-md)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                        <span style={{ fontWeight: "600" }}>RAM</span>
+                        <span>{stats.ram_percent ?? 0}%</span>
+                    </div>
+                    <ProgressBar value={stats.ram_percent ?? 0} color="var(--color-secondary)" />
+                </div>
 
-                justifyContent: "center",
+                <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                        <span style={{ fontWeight: "600" }}>Storage</span>
+                        <span>{stats.storage?.percent || 0}%</span>
+                    </div>
+                    <ProgressBar value={stats.storage?.percent || 0} color="var(--color-info)" />
+                </div>
+            </Card>
 
-                gap: "2vh",
-
-                maxWidth: "900px",
-
-                margin: "0 auto",
-
-                boxSizing: "border-box"
-            }}
-        >
-
-
-            <h1
-                style={{
-                    fontSize: "3vw",
-                    margin: "0"
-                }}
-            >
-                Raspberry Pi 5
-            </h1>
-
-
-
-
-            <div>
-
-                <h3>
-                    CPU {stats.cpu ?? 0}%
-                </h3>
-
-                <Bar
-                    value={stats.cpu ?? 0}
-                />
-
-            </div>
-
-
-
-
-
-            <div>
-
-                <h3>
-                    RAM {stats.ram_percent ?? 0}%
-                </h3>
-
-                <Bar
-                    value={stats.ram_percent ?? 0}
-                />
-
-            </div>
-
-
-
-
-
-            <div>
-
-                <h3>
-                    Storage {stats.storage?.percent || 0}%
-                </h3>
-
-                <Bar
-                    value={stats.storage?.percent || 0}
-                />
-
-            </div>
-
-
-
-
-
-            <div
-                style={{
-                    fontSize: "2.5vw"
-                }}
-            >
-
-                🌡️ Temperature {stats.temperature ?? "--"}°C
-
-            </div>
-
-
-
-
+            <Card style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontWeight: "600" }}>Temperature</span>
+                <span style={{ 
+                    fontSize: "24px", 
+                    fontWeight: "bold", 
+                    color: getTempColor(stats.temperature) 
+                }}>
+                    {stats.temperature ?? "--"}°C
+                </span>
+            </Card>
 
             <DockerStatus />
-
-
         </div>
-
     );
-
 }
