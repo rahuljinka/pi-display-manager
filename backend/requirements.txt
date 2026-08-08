@@ -6,3 +6,4 @@ netifaces
 distro
 python-multipart
 requests
+rpi5-ws2812
